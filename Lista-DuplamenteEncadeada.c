@@ -71,6 +71,8 @@ int main (){
         case 4:
             listagemLista(lista);
              break;
+        case 0:
+             return 0;
         default:
             printf("\nOpção invalida\n");
         }
@@ -186,6 +188,11 @@ void listagemLista (nó *nó){
 nó*  removerNó  (nó **lista, int posição){
      if(posição <= 0){
         printf("\ninsira uma posição existente\n");
+        return NULL;
+     }
+
+     if(*lista == NULL){
+        printf("\nLista Vazia\n");
         return NULL;
      }
 

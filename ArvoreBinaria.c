@@ -13,6 +13,7 @@ void inOrder (nó *raiz);
 void preOrder (nó *raiz);
 void postOrder (nó *raiz);
 void remover (nó **raiz, int n); 
+void liberarMemoria (nó *raiz);
 
 int main (){
       
@@ -58,6 +59,7 @@ int main (){
                 printf("\nOpção Invalida\n"); }
              break;
         case 0:
+             liberarMemoria(raiz);
              return 0;
         default:
             printf("\nOpção invalida\n");
@@ -97,29 +99,29 @@ void busca (nó *raiz, int n){
          return;
      }
      
-     if (n < raiz->x) 
+     if (n < raiz->x)  
          busca(raiz->Esquerda, n);
      else if (n > raiz->x) 
          busca(raiz->Direita, n);
 }
 
-void preOrder (nó *raiz){
-    if(raiz){
-       printf("%d ", raiz->x);
+void preOrder (nó *raiz){ 
+    if(raiz){    //imprime o valor, depois vai para a esquerda, se não tiver nada a esquerda, vai para a direita
+       printf("%d ", raiz->x); 
        preOrder(raiz->Esquerda);
        preOrder(raiz->Direita);
     }
 }
 void inOrder (nó *raiz){
-     if(raiz){
+     if(raiz){  //vai para a esquerda, se não tiver mais nada a esquerda imprime o valor, e depois vai para a direita
         inOrder(raiz->Esquerda);
         printf("%d ", raiz->x);
         inOrder(raiz->Direita);
      }
 }
-void postOrder (nó *raiz){
-    if(raiz){
-       postOrder(raiz->Esquerda);
+void postOrder (nó *raiz){ 
+    if(raiz){   //vai para a esquerda se não tiver nada a esquerda vai para a direita, se não tiver nada a direita, imprime o valor
+       postOrder(raiz->Esquerda); 
        postOrder(raiz->Direita);
        printf("%d ", raiz->x);
     }
@@ -140,19 +142,31 @@ void remover (nó **raiz, int n){
             free(*raiz);
             *raiz = NULL; }
          else if ((*raiz)->Direita == NULL){ //se o nó tiver um filho e o filho tiver a direita
-            nó *aux = *raiz;
-            *raiz = (*raiz)->Esquerda;
-            free(aux); }
+            nó *aux = *raiz;                 //nó auxiliar para receber o nó a ser removido
+            *raiz = (*raiz)->Esquerda;       //filho da esquerda assume o lugar do pai na arvore
+            free(aux); }                     //nó removido
          else if ((*raiz)->Esquerda == NULL){ //se o nó tiver um filho e o filho tiver a esquerda
-            nó *aux = *raiz;
-            *raiz = (*raiz)->Direita;
+            nó *aux = *raiz;                  //mesma coisa, so que agora com o filho na direita
+            *raiz = (*raiz)->Direita;         
             free(aux); }
-         else { //se o nó tiver 2 filhos
-            nó *aux = (*raiz)->Esquerda;
-            while (aux->Direita) {
-                aux = aux->Direita; }
-                (*raiz)->x = aux->x;
-                remover(&(*raiz)->Esquerda, aux->x);
-         }
+         else {                               //se o nó tiver 2 filhos
+            nó *aux = (*raiz)->Esquerda;      //nó auxiliar recebe o filho da esquerda para pecorrer a sub-arvore da esquerda
+            while (aux->Direita) {            //preocura o valor mais a direita da sub-arvore da esquerda
+                aux = aux->Direita; }               
+                (*raiz)->x = aux->x;          //substitui o valor do nó que quer ser removido pelo seu sucessor in order
+                remover(&(*raiz)->Esquerda, aux->x); } /*como o valor que foi removido agora assumiu o valor
+                de seu sucessor, no momento tem 2 nó com o mesmo valor na arvore, então essa chamada recursiva
+                remove o nó duplicado que é uma folha (o que torna mais simples de remover) que se encontra na sub-arvore da 
+                esquerda*/
      }    
 }
+
+void liberarMemoria (nó *raiz){ //função de liberar memoria
+     if (raiz == NULL)
+        return;
+     liberarMemoria(raiz->Esquerda);
+     liberarMemoria(raiz->Direita);
+     free(raiz);
+}
+
+

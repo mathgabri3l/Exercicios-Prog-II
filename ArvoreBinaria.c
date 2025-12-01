@@ -75,11 +75,16 @@ void Inserir (nó **raiz, int n) {
     
     if(*raiz == NULL){     //caso ache um espaço "vazio", cria o novo nó
         *raiz = malloc(sizeof(nó));
+         if(*raiz == NULL){ //confirmação se a memoria foi alocada
+         printf("ERRO"); 
+         return; 
+        }
         (*raiz)->x = n;
         (*raiz)->Esquerda = NULL;
         (*raiz)->Direita = NULL;
-        return;}
-     
+         return;
+        }
+    
      if (n < (*raiz)->x) 
         Inserir(&(*raiz)->Esquerda, n); 
      else if (n > (*raiz)->x)

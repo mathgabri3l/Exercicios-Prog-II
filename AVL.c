@@ -8,9 +8,9 @@ typedef struct Nó{
     int altura;
 }nó;
 
-//funções novas implementadas: CriaNó, Altura, maiorNó, AlturaNó,FB
+//funções novas implementadas: CriaNó, Altura, maiorNó, AlturaNó,FB, rotaçãoDir/Esq/Duplas.
 
-nó* criarNó (int n);
+nó *criarNó (int n);
 void Inserir (nó **raiz, int n );
 void busca (nó *raiz, int n);
 void inOrder (nó *raiz);
@@ -22,6 +22,10 @@ int Altura (nó *raiz);
 int AlturaNó (nó *nó);
 int maiorNó (int nóA, int nóB);
 int FB (nó *nó);
+nó *rotaçãoDir(nó *raiz);
+nó *rotaçãoEsq(nó *raiz);
+nó *rotaçãoDirEsq (nó *raiz);
+nó *rotaçãoEsqDir (nó *raiz);
   
 int main(){
     int escolha, n;
@@ -77,7 +81,7 @@ int main(){
     return 0;
 }
 
-nó* criarNó (int n){
+nó *criarNó (int n){
    nó *novo = malloc(sizeof(nó));
    
    if(novo){
@@ -120,10 +124,50 @@ int AlturaNó (nó *nó){
 }
 
 int FB (nó *nó){ 
-    if(nó)
-       return AlturaNó(nó->Esquerda) - AlturaNó(nó->Direita); //fator de balanceamento = Altura da esquerda - altura da direita
+    if(nó) //fator de balanceamento (FB) = altura da esquerda - altura da direita. 
+       return AlturaNó(nó->Esquerda) - AlturaNó(nó->Direita); 
     else 
        return 0;
+}
+
+nó *rotaçãoEsq(nó *raiz){ 
+    nó *y, *x;
+
+    y = raiz->Direita; //filho da direita da raiz desbalanceada
+    x = y->Esquerda; //filho da esquerda do filho da direita (se ele existir)
+
+    y->Esquerda = raiz; //raiz "desce" para ser o filho da esquerda do seu posteriormente filho da direita
+    raiz->Direita = x; //filho da esquerda de y, se ele existir, agora passa a ser filho da esquerda da antiga raiz
+    //atualizando a altura dos nó, altura = maior altura das suas subArvores + 1
+    raiz->altura = maiorNó(AlturaNó(raiz->Esquerda), AlturaNó(raiz->Direita)) + 1; 
+    y->altura = maiorNó(AlturaNó(y->Esquerda), AlturaNó(y->Direita)) + 1;
+
+    return y; //o "y" sera a nova raiz da arvore, por isso ele que sera retornado
+}
+
+nó *rotaçãoDir(nó *raiz){
+    nó *y, *x;
+
+    y = raiz->Esquerda;
+    x = y->Direita;
+
+    y->Direita = raiz;
+    raiz->Esquerda = x;
+
+    raiz->altura = maiorNó(AlturaNó(raiz->Esquerda), AlturaNó(raiz->Direita)) + 1;
+    y->altura = maiorNó(AlturaNó(y->Esquerda), AlturaNó(y->Direita)) + 1;
+
+    return y;
+}
+//rotação direita esquerda ou dupla esquerda
+nó *rotaçãoDirEsq (nó *raiz) {
+    raiz->Direita = rotaçãoDir(raiz->Direita);
+    return rotaçãoEsq(raiz);
+}
+//rotação direita esquerda ou dupla direita
+nó *rotaçãoEsqDir (nó *raiz){
+    raiz->Esquerda = rotaçãoDir(raiz->Esquerda);
+    return rotaçãoDir(raiz);
 }
 
 void Inserir (nó **raiz, int n) {

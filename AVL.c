@@ -8,7 +8,7 @@ typedef struct Nó{
     int altura;
 }nó;
 
-//funções novas implementadas: CriaNó, Altura, maiorNó, AlturaNó,FB, rotaçãoDir/Esq/Duplas e balanceamento.
+//funções novas implementadas: CriaNó,maiorNó,AlturaNó,FB, rotaçãoDir/Esq/Duplas e balanceamento.
 
 nó *criarNó (int n);
 void Inserir (nó **raiz, int n );
@@ -81,9 +81,8 @@ int main(){
     
     return 0;
 }
-
-nó *criarNó (int n){
-   nó *novo = malloc(sizeof(nó));
+nó *criarNó (int n){ 
+   nó *novo = malloc(sizeof(nó)); //função criar nó agora e separada da função de inserir
    
    if(novo){
         novo->x = n;
@@ -95,45 +94,26 @@ nó *criarNó (int n){
      printf("ERRO");
    return novo;
 }
-//recebe duas alturas de dois nó e retorna o maior
-
-int Altura (nó *raiz){ //Função para calcular a altura da arvore
-    if(raiz == NULL){
-        return -1;
-    }
-    else{
-        int left =  Altura(raiz->Esquerda);  
-        int right = Altura(raiz->Esquerda);  
-        if (left > right)                   
-           return left + 1;
-        else 
-           return right + 1;
-    } 
-}
-
-int AlturaNó (nó *nó){
-    if (nó == NULL)
-        return -1;
+int AlturaNó (nó *nó){ 
+    if (nó == NULL) //função para saber a altura de uma determinada subarvore
+        return -1; //espaço vazio tem altura de -1
     else 
        return nó->altura;
 }
-
 int maiorNó (int nóA, int nóB){ 
 if (nóA > nóB) 
-    return nóA;
+    return nóA; //função vai receber dois numeros (que serão alturas) e retornara o maior dentre eles
 else 
-    return nóB;
+    return nóB; //se forem alturas iguais, pode retornar qualquer uma
 }
-
-int FB (nó *nó){ 
+int FB (nó *nó){ //função que calcula o fator de balanceamento
     if(nó) //fator de balanceamento (FB) = altura da esquerda - altura da direita. 
        return AlturaNó(nó->Esquerda) - AlturaNó(nó->Direita); 
     else 
        return 0;
 }
-
 nó *rotaçãoEsq(nó *raiz){ 
-    nó *y, *x;
+    nó *y, *x; //função para rotação a esquerda
 
     y = raiz->Direita; //filho da direita da raiz desbalanceada
     x = y->Esquerda; //filho da esquerda do filho da direita (se ele existir)
@@ -146,9 +126,8 @@ nó *rotaçãoEsq(nó *raiz){
 
     return y; //o "y" sera a nova raiz da arvore, por isso ele que sera retornado
 }
-
 nó *rotaçãoDir(nó *raiz){
-    nó *y, *x;
+    nó *y, *x; //função para rotação a direita, mesma coisa da anterior porem invertida
 
     y = raiz->Esquerda;
     x = y->Direita;
@@ -161,35 +140,33 @@ nó *rotaçãoDir(nó *raiz){
 
     return y;
 }
-//rotação direita esquerda ou dupla esquerda
-nó *rotaçãoDirEsq (nó *raiz) {
-    raiz->Direita = rotaçãoDir(raiz->Direita);
+nó *rotaçãoDirEsq (nó *raiz) { 
+    //rotação direita esquerda, primeiro faz uma rotação a direita e depois uma rotação para esquerda
+    raiz->Direita = rotaçãoDir(raiz->Direita); 
     return rotaçãoEsq(raiz);
 }
-//rotação direita esquerda ou dupla direita
 nó *rotaçãoEsqDir (nó *raiz){
-    raiz->Esquerda = rotaçãoDir(raiz->Esquerda);
+    //rotação esquerda direita, primeiro faz uma rotação a esquerda e depois uma rotação para direita
+    raiz->Esquerda = rotaçãoEsq(raiz->Esquerda);
     return rotaçãoDir(raiz);
 }
-
 nó *balanceamento(nó *raiz){
     int fb = FB(raiz);
-   
-    if(fb < -1 && FB(raiz->Direita) <= 0 )
+    //função para balancear a arvore
+    if(fb < -1 && FB(raiz->Direita) <= 0 ) //se o fb for negativo e o fb do filho da direita tambem for negativo ou 0
       raiz = rotaçãoEsq(raiz);
-    else if (fb > 1 && FB(raiz->Esquerda) >= 0 )
+    else if (fb > 1 && FB(raiz->Esquerda) >= 0 ) //se o fb for positivo e o fb do filho da esquerda tambem for positivo ou 0
       raiz = rotaçãoDir(raiz);
-    else if (fb < -1 && FB(raiz->Direita) > 0)
-      raiz = rotaçãoDirEsq(raiz);
-    else if (fb > 1 && FB(raiz->Esquerda) < 0)
+    else if (fb < -1 && FB(raiz->Direita) > 0)  //se o fb for negativo e o fb do filho da direita for positivo 
+      raiz = rotaçãoDirEsq(raiz); 
+    else if (fb > 1 && FB(raiz->Esquerda) < 0) //se o fb for positivo e o fb do filho da esquerda for negativo 
       raiz = rotaçãoEsqDir(raiz);
     
     return raiz;
     }
-
 void Inserir (nó **raiz, int n) {
     
-    if(*raiz == NULL){     //caso ache um espaço "vazio", cria o novo nó
+    if(*raiz == NULL){     
          *raiz = criarNó(n);
          return; 
         }
@@ -199,18 +176,17 @@ void Inserir (nó **raiz, int n) {
         Inserir(&(*raiz)->Direita, n); 
         else {
         printf("Valor Já existe na arvore\n"); 
-        return; //Caso seja um valor que ja está na arvore, nada é inserido
+        return;
          } 
 
+     //altura dos filhos 
      int alturaEsq = AlturaNó((*raiz)->Esquerda);
      int alturaDir = AlturaNó((*raiz)->Direita);
-
+     //atualiza altura, pega a maior altura de um dos filhos e soma +1
      (*raiz)->altura = maiorNó(alturaEsq, alturaDir) + 1;
-
+      //balancea (se for preciso) a arvore apos o novo nó inserido
      *raiz = balanceamento(*raiz);
     } 
-
-
 void remover (nó **raiz, int n){
       if(*raiz == NULL){
         printf("Valor não está na arvore\n"); 

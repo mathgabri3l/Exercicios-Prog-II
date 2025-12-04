@@ -5,8 +5,12 @@ typedef struct Nó{
     int x;
     struct Nó *Esquerda;
     struct Nó *Direita;
+    int altura;
 }nó;
 
+//funções novas implementadas: CriaNó, Altura, maiorNó, AlturaNó,FB
+
+nó* criarNó (int n);
 void Inserir (nó **raiz, int n );
 void busca (nó *raiz, int n);
 void inOrder (nó *raiz);
@@ -14,9 +18,12 @@ void preOrder (nó *raiz);
 void postOrder (nó *raiz);
 void remover (nó **raiz, int n); 
 void liberarMemoria (nó *raiz);
-
-int main (){
-      
+int Altura (nó *raiz); 
+int AlturaNó (nó *nó);
+int maiorNó (int nóA, int nóB);
+int FB (nó *nó);
+  
+int main(){
     int escolha, n;
     nó *raiz = NULL;
 
@@ -70,25 +77,71 @@ int main (){
     return 0;
 }
 
+nó* criarNó (int n){
+   nó *novo = malloc(sizeof(nó));
+   
+   if(novo){
+        novo->x = n;
+        novo->Esquerda = NULL;
+        novo->Direita = NULL;
+        novo->altura = 0;
+   }
+   else
+     printf("ERRO");
+   return novo;
+}
+//recebe duas alturas de dois nó e retorna o maior
+int maiorNó (int nóA, int nóB){ 
+if (nóA > nóB) 
+    return nóA;
+else 
+    return nóB;
+}
+
+int Altura (nó *raiz){ //Função para calcular a altura da arvore
+    if(raiz == NULL){
+        return -1;
+    }
+    else{
+        int left =  Altura(raiz->Esquerda);  
+        int right = Altura(raiz->Esquerda);  
+        if (left > right)                   
+           return left + 1;
+        else 
+           return right + 1;
+    } 
+}
+
+int AlturaNó (nó *nó){
+    if (nó == NULL)
+        return -1;
+    else 
+       return nó->altura;
+}
+
+int FB (nó *nó){ 
+    if(nó)
+       return AlturaNó(nó->Esquerda) - AlturaNó(nó->Direita); //fator de balanceamento = Altura da esquerda - altura da direita
+    else 
+       return 0;
+}
 
 void Inserir (nó **raiz, int n) {
     
     if(*raiz == NULL){     //caso ache um espaço "vazio", cria o novo nó
-        *raiz = malloc(sizeof(nó));
-        (*raiz)->x = n;
-        (*raiz)->Esquerda = NULL;
-        (*raiz)->Direita = NULL;
-        return;}
-     
+         criarNó(n);
+         return; 
+        }
      if (n < (*raiz)->x) 
         Inserir(&(*raiz)->Esquerda, n); 
      else if (n > (*raiz)->x)
         Inserir(&(*raiz)->Direita, n); 
-     else {
+        else {
         printf("Valor Já existe na arvore\n"); //Caso seja um valor que ja está na arvore, nada é inserido
         return; } 
     } 
 
+     
 void busca (nó *raiz, int n){
      if (raiz == NULL){
         printf("\nValor não se encontra na arvore\n\n");
@@ -156,8 +209,8 @@ void remover (nó **raiz, int n){
                 (*raiz)->x = aux->x;          //substitui o valor do nó que quer ser removido pelo seu sucessor in order
                 remover(&(*raiz)->Esquerda, aux->x); } /*como o valor que foi removido agora assumiu o valor
                 de seu sucessor, no momento tem 2 nó com o mesmo valor na arvore, então essa chamada recursiva
-                remove o nó duplicado que é uma folha (o que torna mais simples de remover) que se encontra na sub-arvore da 
-                esquerda*/
+                remove o nó duplicado que é ou uma folha ou um pai com apenas 1 filho na esquerda (
+                o que torna mais simples de remover), que se encontra na sub-arvore da  esquerda*/
      }    
 }
 
@@ -168,5 +221,4 @@ void liberarMemoria (nó *raiz){ //função de liberar memoria
      liberarMemoria(raiz->Direita);
      free(raiz);
 }
-
 
